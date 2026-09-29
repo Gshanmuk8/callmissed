@@ -1,0 +1,20 @@
+:root {
+  font-family: 'Figtree Variable', sans-serif;
+  font-synthesis: none;
+  font-weight: 400;
+  --display: 'Clash Display', sans-serif;
+  --serif: var(--display);
+  color: #111;
+  background: #f6f5f3;
+  --paper: #f6f5f3;
+  --white: #fbfaf9;
+  --ink: #111;
+  --muted: #5e5c5a;
+  --line: #dcdbda;
+  --orange: #e8400d;
+  --orange-light: #f3d3c4;
+  --green: #52634a;
+  --brand: #e8400d;
+  --brand-strong: #c8360b;
+  --peach: #f0dfc7;
+}

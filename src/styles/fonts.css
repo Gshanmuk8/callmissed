@@ -1,0 +1,21 @@
+@font-face {
+  font-family: 'Clash Display';
+  src: url('/fonts/clash-display-medium.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Clash Display';
+  src: url('/fonts/clash-display-semibold.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 550 600;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Clash Display';
+  src: url('/fonts/clash-display-bold.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 650 900;
+  font-display: swap;
+}

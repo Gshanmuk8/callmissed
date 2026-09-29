@@ -1,0 +1,16 @@
+# Copy to .dev.vars for local development. These values stay on the server.
+# none = configuration pending; cloudflare = Workers AI; compatible = HTTP provider.
+AI_PROVIDER=none
+# Used only for compatible providers; verify each selected model is free on your account.
+AI_BASE_URL=https://your-provider.example/v1
+AI_API_KEY=
+CHAT_MODEL=
+IMAGE_MODEL=
+STT_MODEL=
+TTS_MODEL=
+TTS_VOICE=alloy
+# Optional per-capability providers. When absent, AI_BASE_URL / AI_API_KEY are used.
+IMAGE_BASE_URL=
+IMAGE_API_KEY=
+SPEECH_BASE_URL=
+SPEECH_API_KEY=
