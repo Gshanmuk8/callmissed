@@ -59,8 +59,10 @@ Limits reset at midnight UTC. Failed requests still consume a reservation, and i
 
 ## Deployment notes
 
-Deployment has not been completed. CI runs checks only.
+Live app: https://callmissed-studio.callmissed-studio-0eed1e53.workers.dev
 
-For a future Cloudflare deployment, set `AI_PROVIDER` and nonsecret model settings in `wrangler.jsonc`. Add compatible-provider keys with `npx wrangler secret put AI_API_KEY` and the relevant image/speech key names. `.dev.vars` does not configure production secrets. Optional public Supabase values must be present at frontend build time.
+The production Worker uses `AI_PROVIDER=cloudflare` and the native AI binding. Guest history is stored on each visitor's device; Supabase is optional and is not enabled on this deployment. CI runs checks only; deployments use `npm run deploy` from an authenticated development machine.
+
+To change providers, set `AI_PROVIDER` and nonsecret model settings in `wrangler.jsonc`. Add compatible-provider keys with `npx wrangler secret put AI_API_KEY` and the relevant image/speech key names. `.dev.vars` does not configure production secrets. Optional public Supabase values must be present at frontend build time.
 
 Run the checks before `npm run deploy`. Verify the native AI binding, account allowance, Worker CPU usage and all three live flows on the HTTPS URL. Add that URL to Supabase Auth redirects if cloud history is enabled. The local OAuth launcher is not used in production.

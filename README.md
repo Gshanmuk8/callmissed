@@ -1,5 +1,7 @@
 # CallMissed Studio
 
+[Open the live app](https://callmissed-studio.callmissed-studio-0eed1e53.workers.dev)
+
 I built this for the CallMissed full-stack internship assignment: a web app where you can chat, generate images, and talk to an AI assistant.
 
 I wanted it to feel like one small, useful workspace. The voice screen is my favourite part—the orange orb reacts to the microphone, and the transcript stays beside it so you can come back to the conversation.
@@ -64,8 +66,8 @@ Browser tests use Edge on Windows. On Linux or macOS, run `npx playwright instal
 
 ## Where it stands
 
-Chat, image generation and the voice pipeline have been tested locally with Cloudflare Workers AI. Voice is record → send → listen, with a 15-second limit per turn. It isn't a continuous WebRTC call yet.
+The app is deployed on Cloudflare Workers. Chat, image generation and the voice pipeline have passed live checks on the hosted URL using the native Workers AI binding. Voice is record → send → listen, with a 15-second limit per turn. It isn't a continuous WebRTC call yet.
 
-The supplied CallMissed API hasn't been verified with this app. Real microphone/speaker checks and deployment are still pending. I'd like to improve the voice turn-taking next; it is the biggest gap between this version and a natural conversation.
+The supplied CallMissed API hasn't been verified with this app. Real microphone/speaker checks are still pending; the hosted voice check used a synthesized recording and verified that the reply audio decodes. I'd like to improve the voice turn-taking next; it is the biggest gap between this version and a natural conversation.
 
 [Setup](docs/SETUP.md) · [Architecture](docs/ARCHITECTURE.md) · [Design](docs/DESIGN.md) · [Testing](docs/TESTING.md)

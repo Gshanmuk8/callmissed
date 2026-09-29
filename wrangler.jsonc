@@ -12,6 +12,6 @@
   "ai": { "binding": "AI", "remote": true },
   "durable_objects": { "bindings": [{ "name": "QUOTAS", "class_name": "QuotaLedger" }] },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["QuotaLedger"] }],
-  "vars": { "AI_PROVIDER": "none" },
+  "vars": { "AI_PROVIDER": "cloudflare" },
   "observability": { "enabled": false },
 }

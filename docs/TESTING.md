@@ -34,7 +34,19 @@ Live Cloudflare checks on the same date:
 - FLUX returned a valid 1024 × 1024 JPEG matching a prompt with a red mug, yellow lemon and blue tablecloth.
 - A 5.155-second synthesized WAV completed transcription, a contextual reply and speech synthesis. Edge decoded the returned audio successfully.
 
-These checks used the local REST development connection. The production native binding, physical microphone/speakers and optional Supabase history remain unverified.
+These initial checks used the local REST development connection. Physical microphone/speakers and optional Supabase history remain unverified.
+
+## Hosted verification
+
+Deployed on 29 September 2026 at https://callmissed-studio.callmissed-studio-0eed1e53.workers.dev using Cloudflare's native AI binding. Worker version: `5523dc55-e682-4203-8767-6c059a619d69`.
+
+- The browser loaded the HTTPS app and all three capabilities reported ready.
+- A chat submitted through the UI completed with a visible assistant response and no error alert.
+- Image generation submitted through the UI returned a valid JPEG, displayed it, and matched the red mug, yellow lemon and blue tablecloth prompt.
+- The hosted voice endpoint transcribed the synthesized recording, answered, and returned audio that Edge decoded as 1.641 seconds of mono sound.
+- The production files contained no copy of the local Wrangler OAuth token. No provider key was added to the browser bundle.
+
+These were real provider requests. The voice test verifies the hosted pipeline and decoded audio, not the physical microphone or audible speaker quality.
 
 ## Manual acceptance
 

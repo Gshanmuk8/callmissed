@@ -7,12 +7,19 @@ export default defineConfig(({ command }) => ({
     cloudflare({
       remoteBindings: process.env.CF_REMOTE_AI === '1',
       config:
-        command === 'serve' && process.env.CF_LOCAL_API_TOKEN
+        command === 'serve'
           ? {
               vars: {
-                AI_PROVIDER: 'cloudflare',
-                CF_LOCAL_API_TOKEN: process.env.CF_LOCAL_API_TOKEN,
-                CF_LOCAL_ACCOUNT_ID: process.env.CF_LOCAL_ACCOUNT_ID!,
+                AI_PROVIDER:
+                  process.env.CF_LOCAL_API_TOKEN || process.env.CF_REMOTE_AI === '1'
+                    ? 'cloudflare'
+                    : 'none',
+                ...(process.env.CF_LOCAL_API_TOKEN
+                  ? {
+                      CF_LOCAL_API_TOKEN: process.env.CF_LOCAL_API_TOKEN,
+                      CF_LOCAL_ACCOUNT_ID: process.env.CF_LOCAL_ACCOUNT_ID!,
+                    }
+                  : {}),
               },
             }
           : undefined,
