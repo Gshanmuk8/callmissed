@@ -1,40 +1,45 @@
-# Architecture and implementation decisions
+# How I put it together
 
-## Request flow
+I kept the frontend and API in one repository. React handles the three workspaces, and a Cloudflare Worker serves the built app and handles AI requests. Having them on the same origin makes local development and deployment easier to follow.
 
-The browser serves a Vite-built React application. Static assets and an API Worker share the same origin, so no public CORS wildcard is needed. The browser requests an HTTP-only visitor cookie, then submits a bounded request to `/api/chat`, `/api/images`, or `/api/voice`.
+## From a button click to a reply
 
-Each API route validates input, checks configured capability availability, and reserves capacity through one named SQLite Durable Object. Only admitted requests reach a provider. The quota store fails closed. The provider adapter normalizes responses; private provider errors and credentials are not returned to the client.
+The browser gets an HTTP-only visitor cookie, then calls `/api/chat`, `/api/images` or `/api/voice`. The Worker checks the input, makes sure that capability is configured and reserves a request from the daily allowance. Only then does it call the provider.
 
-Supabase is a separate optional persistence path: browser Auth obtains the user's session and PostgREST enforces row-level security on every session operation. The public browser key is intentionally public; a service-role key is never used. Guest and account caches are kept in separate localStorage namespaces. Cloud saves are debounced and serialized, flushed on internal navigation, and awaited before deletion. Closing a browser before its cloud save completes can leave only the device copy; do not claim guaranteed background delivery.
+The quotas live in one SQLite Durable Object so simultaneous requests share the same counter. If that store is unavailable, the request stops. I preferred that behaviour to accidentally letting a broken quota check use up the AI allowance.
 
-## UI direction
+Provider code sits in `worker/provider.ts`. It turns the different responses into the shapes the frontend expects and keeps credentials and private provider errors out of browser responses. Production uses the native Workers AI binding. There is also a compatible HTTP adapter, but that path still needs a live provider check.
 
-Clash Display headings and Figtree body text follow CallMissed's website, with warm paper, near-black panels and coral accents. Fonts are bundled locally. SVG components provide the image studies and animated voice orb. The studies are labelled as illustrations, not generated outputs. See [design notes](DESIGN.md) for the palette.
+## Keeping the frontend understandable
 
-Voice, chat, and image workspaces each have a layout suited to the task. Empty states provide concrete starting actions. Success, pending setup, quota failure, provider failure, permission wait, recording, processing, and playback are distinct states. The microphone figure changes scale with actual measured input volume while recording; idle motion is decorative. Reduced-motion preferences disable animation.
+Each workspace has its own folder under `src/features`. Shared buttons, notices and dialogs live under `src/components`; the app shell coordinates navigation and sessions. Validation and audio/stream helpers are in `shared` because both sides need them.
 
-## Audio lifetime
+The UI keeps recording, processing and playback separate. Waiting for microphone permission is its own state too. If an old request finishes after a new session starts, operation IDs prevent it from changing the new conversation.
 
-1. A user action requests a microphone. A cancelled late permission result immediately stops its returned tracks.
-2. An AudioWorklet collects bounded PCM chunks. A zero-gain output keeps the processing graph running without microphone feedback.
-3. Finishing capture flushes the worklet, closes tracks and AudioContext, resamples in OfflineAudioContext, and encodes a canonical WAV.
-4. The Worker independently validates the WAV header, length, sample rate, channel count, and 15-second duration bound.
-5. STT produces a transcript; the language model sees bounded prior context; TTS creates a short reply.
-6. The UI exposes transcript and playback. Synthesis failure preserves useful text. A playback gesture is offered when autoplay is blocked.
+## The voice path
 
-Epoch guards prevent prior operations from mutating a new session. Mode changes, stop/discard, unmount, and hidden tabs release capture and stop playback. Raw audio is not persisted. Live hardware quality, background behavior on actual phones, and provider-specific codecs remain acceptance checks.
+This part needs the most care because a microphone can stay active after the screen that requested it has gone away.
 
-## Key tradeoffs
+- A user action requests permission. If the user cancels while permission is pending, any tracks returned later are stopped immediately.
+- An AudioWorklet collects PCM samples. Its output is silent, so the microphone doesn't feed back through the speakers.
+- Finishing a recording flushes the samples, releases the microphone and audio context, resamples the audio and encodes a WAV.
+- The Worker checks the WAV's header, size, sample rate, channels and 15-second duration limit independently of the browser.
+- Transcription becomes the user's message. The language model gets a bounded conversation history, then speech synthesis reads its reply.
 
-- Turn-based voice keeps orchestration understandable and affordable. It does not provide interruption-aware realtime duplex audio.
-- Images are downloaded rather than placed in public object storage. The saved session retains the prompt, not the image binary.
-- Guest sessions avoid signup friction. Optional account history is scoped with RLS and remains usable across signed-in devices.
-- One global quota object is sufficient for a bounded demonstration; this is deliberately not a multi-region high-throughput service.
-- No automatic inference retry avoids duplicate charges. A user can deliberately retry with a new request identifier.
-- API provider selection stays on the server. The user cannot request arbitrary models, remote image URLs, or higher inference steps.
-- Native Cloudflare models and the compatible HTTP adapter are implemented but require live schema/entitlement verification before release.
+If speech synthesis fails, the text reply is still useful. If the browser blocks autoplay, the user gets a play control. Switching modes, hiding the tab, discarding a recording or leaving the component stops recording/playback. Raw recordings are not saved.
 
-## Deliberate scope boundaries
+## Where history goes
 
-There is no billing, public image gallery, external agent tool execution, telephony, document upload, or permanent audio archive. Supabase is optional; the default is device-local guest history. Mock providers are used only in tests.
+The demo saves sessions in localStorage. Images are downloaded separately; history keeps their prompts, not the image files.
+
+Optional Supabase history uses browser Auth and row-level security. No service-role key is needed. Guest history and each account's cache have separate namespaces, so signing in doesn't silently upload guest conversations.
+
+Cloud saves are debounced and serialized. Internal navigation flushes them, and deletion waits for pending saves. Closing the browser before a save finishes can still leave the newest changes only on that device. That is a limitation to keep in mind when testing cloud history.
+
+## Choices I would revisit as it grows
+
+Turn-based voice kept this version manageable within the free allowance. Continuous conversation would need a different audio/session flow, including interruptions. One global quota object is enough for this small demo; a much busier app would need another look at that design.
+
+I also avoided automatic inference retries, since one click shouldn't quietly make several paid requests. Models and generation settings are chosen on the server. The browser can't supply arbitrary provider URLs or increase generation steps.
+
+For this assignment I stayed with chat, images and voice. Billing, phone calls, tool execution, uploads and a public gallery are outside this version. The [design notes](DESIGN.md) cover the UI, and the [testing notes](TESTING.md) record what has actually been checked.

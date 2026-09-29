@@ -1,8 +1,12 @@
-# Design notes
+# The design choices
 
-The reference is [CallMissed's website](https://www.callmissed.com/), inspected on 29 September 2026. The studio uses the same font pairing and main palette, adapted to a workspace with three modes.
+I used [CallMissed's website](https://www.callmissed.com/) as the reference, checked on 29 September 2026. I wanted this to feel like a workspace that belongs alongside it. The font pairing, warm background and coral accents gave me a clear starting point.
 
-| Token             | Value         |
+## Type and colour
+
+Clash Display gives headings some character. Figtree keeps conversation text and controls easy to read. Both are served locally, so opening the app doesn't depend on a font CDN.
+
+| Part              | Choice        |
 | ----------------- | ------------- |
 | Headings          | Clash Display |
 | Body and controls | Figtree       |
@@ -10,23 +14,25 @@ The reference is [CallMissed's website](https://www.callmissed.com/), inspected 
 | Cards             | `#fbfaf9`     |
 | Ink               | `#111111`     |
 | Coral             | `#e8400d`     |
-| Strong coral      | `#c8360b`     |
+| Darker coral      | `#c8360b`     |
 | Peach             | `#f0dfc7`     |
 | Linen             | `#ede9e2`     |
-| Border            | `#dcdbda`     |
+| Borders           | `#dcdbda`     |
 
-Strong coral is used for small text and solid buttons to keep contrast readable. Headings carry the brand; body text and controls stay quieter. Fonts are served locally.
+The darker coral is for small text and solid buttons where contrast matters. I kept most surfaces quiet so the conversation or generated image gets the attention.
 
-The voice orb and image studies are SVG components. The orb responds to measured microphone volume; its idle motion is decorative. The image studies are labelled as illustrations so they aren't confused with generated results.
+## Giving each workspace enough room
 
-Desktop voice uses a side-by-side stage and transcript. On smaller screens these stack, and the navigation moves into a drawer. The three modes share navigation, controls and session history, with a different working area for each task.
+Voice has the orange orb beside its transcript on desktop. On a smaller screen they stack, and navigation moves into a drawer. Chat gives most of the space to reading and writing. Images use a larger preview area. They share navigation and session history, but their working areas suit what the user is doing.
 
-Keyboard focus, dialog focus containment, reduced motion and text contrast are covered by the browser checks. Physical phone testing is still pending.
+The orb is an SVG component. During recording its scale follows measured microphone volume; the idle movement is decorative. The image starter studies are SVG illustrations too, and are labelled that way so nobody mistakes them for generated results.
 
-## API references
+## Small details I care about
 
-- [Chat completion](https://docs.callmissed.com/docs/chat-completion)
-- [Image generation](https://docs.callmissed.com/docs/image-generation)
-- [Voice agents](https://docs.callmissed.com/docs/voice-agent)
+A visible focus ring, a dialog that keeps keyboard focus inside it, a clear error and a reduced-motion option all matter here. Browser checks cover those behaviours and serious/critical axe findings. Actual phone testing is still pending; a narrow browser viewport only tells part of the story.
 
-The compatible adapter follows the chat and image request families. The current voice implementation records one turn at a time; it does not implement CallMissed's continuous WebRTC session protocol.
+## References for the API side
+
+I also reviewed the CallMissed docs for [chat](https://docs.callmissed.com/docs/chat-completion), [images](https://docs.callmissed.com/docs/image-generation) and [voice agents](https://docs.callmissed.com/docs/voice-agent).
+
+The compatible adapter follows the chat/image request families. This demo's voice flow records one turn at a time; it doesn't implement CallMissed's continuous WebRTC protocol. The live provider is Cloudflare Workers AI.

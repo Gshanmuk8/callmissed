@@ -1,10 +1,10 @@
-# Font sources
+# Fonts used in the app
 
-Clash Display by Indian Type Foundry, obtained from the official Fontshare CDN on 2026-09-29. Medium, Semibold and Bold are embedded unchanged for this web application.
+I followed the pairing on [CallMissed's website](https://www.callmissed.com/): Clash Display for headings and Figtree for body text. I kept the fonts local so the app doesn't need to contact a font CDN when it opens.
 
-- Family and ITF Free Font License: https://www.fontshare.com/fonts/clash-display
-- Official CSS source: https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap
+Clash Display is by Indian Type Foundry. The Medium, Semibold and Bold files came from the official Fontshare CDN on 29 September 2026 and are embedded unchanged.
 
-Figtree is installed from `@fontsource-variable/figtree`; its OFL license is included in that dependency.
+- [Family and ITF Free Font License](https://www.fontshare.com/fonts/clash-display)
+- [Official CSS source](https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap)
 
-The pairing follows the typography observed on https://www.callmissed.com/. Fonts are served locally; the browser does not contact a font CDN.
+Figtree comes from `@fontsource-variable/figtree`. Its OFL license is included in that dependency.
